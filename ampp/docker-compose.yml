@@ -1,0 +1,31 @@
+services:
+
+  mariadb:
+    container_name: "ampp-mariadb"
+    image: mariadb:latest
+    restart: unless-stopped
+    environment:
+      - MARIADB_ROOT_PASSWORD=pw
+      - MARIADB_USER=admin
+      - MARIADB_PASSWORD=pw
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./docker/mariadb/data:/data
+      - ./docker/mariadb/backup:/backup
+
+  php:
+    container_name: "ampp-php"
+    image: php:apache-bookworm
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - type: bind
+        source: ./docker/var/www/html
+        target: /var/www/html
+      - ./docker/php/php.ini:/opt/bitnami/php/etc/conf.d/php.ini:ro
+
+volumes:
+  ampp-mariadb:
+    driver: local
